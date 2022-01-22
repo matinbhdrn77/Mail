@@ -1,14 +1,38 @@
-document.addEventListener('DOMContentLoaded', function() {
+'use strict';
 
-  // Use buttons to toggle between views
-  document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
-  document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
-  document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
-  document.querySelector('#compose').addEventListener('click', compose_email);
 
-  // By default, load the inbox
-  load_mailbox('inbox');
-});
+// Use buttons to toggle between views
+document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
+document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
+document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
+document.querySelector('#compose').addEventListener('click', compose_email);
+
+// By default, load the inbox
+load_mailbox('inbox');
+
+// Send A Email
+document.getElementById('compose-form').addEventListener('submit', (e) => submit_form(e))
+
+
+function submit_form(e) {
+  e.preventDefault()
+  const form = e.target
+  fetch('/emails', {
+    method: 'POST',
+    body: JSON.stringify({
+        recipients: form.elements['compose-recipients'].value,
+        
+        subject: form.elements['compose-subject'].value,
+        body: form.elements['compose-body'].value
+    })
+  })
+  .then(response => response.json())
+  .then(result => {
+      // Print result
+      console.log(result.error);
+  });
+  load_mailbox('sent');
+}
 
 function compose_email() {
 
