@@ -1,5 +1,8 @@
 'use strict';
 
+// Select Views
+  const emailsView = document.querySelector('#emails-view')
+  const composeView = document.querySelector('#compose-view')
 
 // Use buttons to toggle between views
 document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
@@ -52,8 +55,8 @@ function submit_form(e) {
 function compose_email() {
 
   // Show compose view and hide other views
-  document.querySelector('#emails-view').style.display = 'none';
-  document.querySelector('#compose-view').style.display = 'block';
+  emailsView.style.display = 'none';
+  composeView.style.display = 'block';
 
   // Clear out composition fields
   document.querySelector('#compose-recipients').value = '';
@@ -64,21 +67,35 @@ function compose_email() {
 function load_mailbox(mailbox) {
 
   // Show the mailbox and hide other views
-  document.querySelector('#emails-view').style.display = 'block';
-  document.querySelector('#compose-view').style.display = 'none';
+  emailsView.style.display = 'block';
+  composeView.style.display = 'none';
 
   // Show the mailbox name
-  const header = document.createElement('h3')
+  const header = document.getElementById('header')
   header.textContent = `${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}`
-  document.querySelector('#emails-view').prepend(header)
 
+  const tableBodyEl = document.getElementById('table-body')
+  tableBodyEl.innerHTML = ''
   // Retrive Emials
   fetch('/emails/' + mailbox)
     .then(response => response.json())
     .then(emails => {
     // Print emails
     console.log(emails);
-
     // ... do something else with emails ...
+    emails.forEach(email => {
+      console.log(email)
+      const html = `
+      <tr class="${email.read && 'read'}">
+        <th>
+          ${mailbox === "sent" ? email.recipients.join(", ") : email.sender}
+        </th>
+        <td>${email.subject}</td>
+        <td>${email.timestamp}</td>
+      </tr>
+      `
+      tableBodyEl.insertAdjacentHTML('beforeend', html)
+
+    });
   });
 }
