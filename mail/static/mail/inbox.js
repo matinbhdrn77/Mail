@@ -1,14 +1,31 @@
 'use strict';
 
-// Select Views
-  const emailsView = document.querySelector('#emails-view')
-  const composeView = document.querySelector('#compose-view')
+// Select Elements 
+const tableBodyEl = document.getElementById('table-body')
 
-// Use buttons to toggle between views
-document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
-document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
-document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
-document.querySelector('#compose').addEventListener('click', compose_email);
+// Select Views 
+const emailsView = document.querySelector('#emails-view')
+const composeView = document.querySelector('#compose-view')
+
+// Use buttons to toggle between views (event delegation)
+document.querySelector("#inbox").addEventListener("click", () => load_mailbox("inbox"));
+document.querySelector("#sent").addEventListener("click", () => load_mailbox("sent"));
+document.querySelector("#archived").addEventListener("click", () => load_mailbox("archive"));
+document.querySelector("#compose").addEventListener("click", compose_email);
+
+// listen to each email-box
+tableBodyEl.addEventListener('click', function(e) {
+  if (e.target.parentElement.classList.contains('email-box')) {
+    let id = e.target.parentElement.dataset.emailId
+    console.log(id)
+    fetch('/emails/' + parseInt(id))
+    .then(response => response.json())
+    .then(email => {
+    // Print email
+    console.log(email);
+    });
+  }
+})
 
 // By default, load the inbox
 load_mailbox('inbox');
@@ -74,25 +91,21 @@ function load_mailbox(mailbox) {
   const header = document.getElementById('header')
   header.textContent = `${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}`
 
-  const tableBodyEl = document.getElementById('table-body')
   tableBodyEl.innerHTML = ''
   // Retrive Emials
   fetch('/emails/' + mailbox)
     .then(response => response.json())
     .then(emails => {
-    // Print emails
-    console.log(emails);
-    // ... do something else with emails ...
+    // Full table Body with emails
     emails.forEach(email => {
-      console.log(email)
       const html = `
-      <tr class="${email.read && 'read'}">
-        <th>
-          ${mailbox === "sent" ? email.recipients.join(", ") : email.sender}
-        </th>
-        <td>${email.subject}</td>
-        <td>${email.timestamp}</td>
-      </tr>
+        <tr class="${email.read ? 'read' : 'unread'} email-box" data-email-id="${email.id}">
+          <th>
+            ${mailbox === "sent" ? email.recipients.join(", ") : email.sender}
+          </th>
+          <td>${email.subject}</td>
+          <td>${email.timestamp}</td>
+        </tr>
       `
       tableBodyEl.insertAdjacentHTML('beforeend', html)
 
