@@ -17,3 +17,11 @@ textarea {
 .read {
     background-color: rgb(248, 248, 248);
 }
+
+.margin-right {
+    margin-right: 0.25em;
+}
+
+.margin-top {
+    margin-top: 0.5em;
+}
