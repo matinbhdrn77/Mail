@@ -40,7 +40,6 @@ function submit_form(e) {
     method: 'POST',
     body: JSON.stringify({
       recipients: form.elements['compose-recipients'].value,
-
       subject: form.elements['compose-subject'].value,
       body: form.elements['compose-body'].value
     })
@@ -116,10 +115,23 @@ function load_mailbox(mailbox) {
 
 function load_email(email) {
 
+  // Erase last emails
+  emailView.innerHTML = ''
+
   // Show the mailbox and hide other views
   emailsView.style.display = 'none';
   composeView.style.display = 'none';
   emailView.style.display = 'block';
+  
+  // Update read prorperty
+  if (!email.read) {
+    fetch('/emails/' + parseInt(email.id), {
+      method: 'PUT',
+      body: JSON.stringify({
+          read: true
+      })
+    })
+  }
 
   // create div for every element
   const from = document.createElement('div')
@@ -140,13 +152,12 @@ function load_email(email) {
   // reply button
   replyBtn.textContent = 'Reply'
   replyBtn.classList = 'btn btn-sm btn-outline-primary margin-right margin-top'
-  replyBtn.addEventListener('click', reply_email(email))
+  replyBtn.addEventListener('click', () => reply_email(email))
   // archive button
   archiveBtn.textContent = email.archived ? 'Unarchive' : 'Archive'
   archiveBtn.classList = 'btn btn-sm btn-outline-primary margin-top'
   archiveBtn.addEventListener('click', function(e) {
-    handle_archive_email(email)
-    // e.target.textContent
+    handle_archiving_email(e, email)
   })
   
 
@@ -159,6 +170,13 @@ function reply_email(email) {
   console.log('email replied')
 }
 
-function handle_archive_email(email) {
-  console.log('email archiving handeled')
+function handle_archiving_email(event, email) {
+  fetch('/emails/' + parseInt(email.id), {
+    method: 'PUT',
+    body: JSON.stringify({
+        archived: !email.archived
+    })
+  })
+  if (event.target.textContent === 'Archive') event.target.textContent = 'Unarchive'
+  else event.target.textContent = 'Archive'
 }
