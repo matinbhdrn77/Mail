@@ -167,9 +167,15 @@ function load_email(email) {
 }
 
 function reply_email(email) {
-  console.log('email replied')
+  compose_email();
+  // Prefill input fields
+  document.querySelector('#compose-recipients').value = email.sender;
+  document.querySelector('#compose-subject').value = `Re: ${email.subject}`;
+  document.querySelector('#compose-body').value = `On ${email.timestamp} ${email.sender} wrote: 
+    "${email.body}"`;
 }
 
+// Archive and Unarchive Emails
 function handle_archiving_email(event, email) {
   fetch('/emails/' + parseInt(email.id), {
     method: 'PUT',
