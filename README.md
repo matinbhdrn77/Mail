@@ -1,9 +1,5 @@
 # CS50w Project-3 Mail
 
-This is the project I made which is an e-commerce auction site that will allow users to post auction listings, place bids on listings, comment on those listings, and add listings to a watchlist.
-
-# Specification
-
 Using JavaScript, HTML, and CSS, complete the implementation of your single-page-app email client inside of inbox.js (and not additional or other files; for grading purposes, we’re only going to be considering inbox.js!). You must fulfill the following requirements:
 
 - Send Mail: When a user submits the email composition form, add JavaScript code to actually send the email.
